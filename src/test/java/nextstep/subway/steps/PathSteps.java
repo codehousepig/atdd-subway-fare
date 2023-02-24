@@ -15,18 +15,16 @@ import io.restassured.specification.RequestSpecification;
 
 public class PathSteps {
 
-	public static ExtractableResponse<Response> searchPath(RequestSpecification spec, Long source, Long target) {
-		Map<String, Long> params = new HashMap<>();
-		params.put("source", source);
-		params.put("target", target);
-
+	public static ExtractableResponse<Response> searchPathDistance(RequestSpecification spec, Long source, Long target, String type) {
 		ExtractableResponse<Response> searchResponse = RestAssured
 			.given(spec).log().all()
 			.filter(document("path",
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint())))
 			.accept(MediaType.APPLICATION_JSON_VALUE)
-			.params(params)
+			.queryParam("source", source)
+			.queryParam("target", target)
+			.queryParam("type", type)
 			.when().get("/paths")
 			.then().log().all()
 			.extract();
@@ -37,7 +35,7 @@ public class PathSteps {
 		return RestAssured
 			.given().log().all()
 			.accept(MediaType.APPLICATION_JSON_VALUE)
-			.when().get("/paths?source={sourceId}&target={targetId}", source, target)
+			.when().get("/paths?source={sourceId}&target={targetId}&type=", source, target)
 			.then().log().all().extract();
 	}
 
